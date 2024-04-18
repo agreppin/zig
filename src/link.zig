@@ -111,6 +111,7 @@ pub const File = struct {
         major_subsystem_version: ?u16,
         minor_subsystem_version: ?u16,
         gc_sections: ?bool,
+        no_rosegment: bool,
         allow_shlib_undefined: ?bool,
         allow_undefined_version: bool,
         enable_new_dtags: ?bool,

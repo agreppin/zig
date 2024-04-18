@@ -1037,6 +1037,7 @@ pub const CreateOptions = struct {
     linker_enable_new_dtags: ?bool = null,
     soname: ?[]const u8 = null,
     linker_gc_sections: ?bool = null,
+    linker_no_rosegment: bool = false,
     linker_allow_shlib_undefined: ?bool = null,
     linker_bind_global_refs_locally: ?bool = null,
     linker_import_symbols: bool = false,
@@ -1524,6 +1525,7 @@ pub fn create(gpa: Allocator, arena: Allocator, options: CreateOptions) !*Compil
             .allow_undefined_version = options.linker_allow_undefined_version,
             .enable_new_dtags = options.linker_enable_new_dtags,
             .gc_sections = options.linker_gc_sections,
+            .no_rosegment = options.linker_no_rosegment,
             .emit_relocs = options.link_emit_relocs,
             .soname = options.soname,
             .compatibility_version = options.compatibility_version,
@@ -2492,6 +2494,7 @@ fn addNonIncrementalStuffToCacheManifest(
     man.hash.add(opts.z_relro);
     man.hash.add(opts.z_common_page_size orelse 0);
     man.hash.add(opts.z_max_page_size orelse 0);
+    man.hash.add(opts.no_rosegment);
     man.hash.add(opts.hash_style);
     man.hash.add(opts.compress_debug_sections);
     man.hash.addOptional(opts.sort_section);

@@ -848,6 +848,7 @@ fn buildOutputType(
     var disable_c_depfile = false;
     var linker_sort_section: ?link.File.Elf.SortSection = null;
     var linker_gc_sections: ?bool = null;
+    var linker_no_rosegment: bool = false;
     var linker_compress_debug_sections: ?link.File.Elf.CompressDebugSections = null;
     var linker_allow_shlib_undefined: ?bool = null;
     var linker_bind_global_refs_locally: ?bool = null;
@@ -2199,6 +2200,8 @@ fn buildOutputType(
                     dead_strip_dylibs = true;
                 } else if (mem.eql(u8, arg, "-ObjC")) {
                     force_load_objc = true;
+                } else if (mem.eql(u8, arg, "--no-rosegment")) {
+                    linker_no_rosegment = true;
                 } else if (mem.eql(u8, arg, "--no-undefined")) {
                     linker_z_defs = true;
                 } else if (mem.eql(u8, arg, "--gc-sections")) {
@@ -3242,6 +3245,7 @@ fn buildOutputType(
         .soname = resolved_soname,
         .linker_sort_section = linker_sort_section,
         .linker_gc_sections = linker_gc_sections,
+        .linker_no_rosegment = linker_no_rosegment,
         .linker_allow_shlib_undefined = linker_allow_shlib_undefined,
         .linker_bind_global_refs_locally = linker_bind_global_refs_locally,
         .linker_import_symbols = linker_import_symbols,

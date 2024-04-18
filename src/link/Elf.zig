@@ -12,6 +12,7 @@ z_relro: bool,
 z_common_page_size: ?u64,
 /// TODO make this non optional and resolve the default in open()
 z_max_page_size: ?u64,
+no_rosegment: bool,
 lib_dirs: []const []const u8,
 hash_style: HashStyle,
 compress_debug_sections: CompressDebugSections,
@@ -333,6 +334,7 @@ pub fn createEmpty(
         .z_relro = options.z_relro,
         .z_common_page_size = options.z_common_page_size,
         .z_max_page_size = options.z_max_page_size,
+        .no_rosegment = options.no_rosegment,
         .lib_dirs = options.lib_dirs,
         .hash_style = options.hash_style,
         .compress_debug_sections = options.compress_debug_sections,
@@ -2471,10 +2473,6 @@ fn linkWithLLD(self: *Elf, arena: Allocator, prog_node: *std.Progress.Node) !voi
             // LLD defaults to -zlazy
             try argv.append("-znow");
         }
-        if (!self.z_relro) {
-            // LLD defaults to -zrelro
-            try argv.append("-znorelro");
-        }
         if (self.z_common_page_size) |size| {
             try argv.append("-z");
             try argv.append(try std.fmt.allocPrint(arena, "common-page-size={d}", .{size}));
@@ -2518,6 +2516,14 @@ fn linkWithLLD(self: *Elf, arena: Allocator, prog_node: *std.Progress.Node) !voi
             // See https://github.com/ziglang/zig/issues/9109 .
             try argv.append("--no-rosegment");
             try argv.append("-znorelro");
+        } else {
+            if (self.no_rosegment) {
+                try argv.append("--no-rosegment");
+            }
+            if (!self.z_relro) {
+                // LLD defaults to -zrelro
+                try argv.append("-znorelro");
+            }
         }
 
         try argv.append("-o");
